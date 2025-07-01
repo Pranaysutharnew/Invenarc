@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invenarc Dashboard</title>
+    <!-- favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
+    <link rel="manifest" href="favicon/site.webmanifest">
+
+    <link rel="stylesheet" href="css/main_page.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700&display=swap" rel="stylesheet">
+
+    <!-- Add AOS CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+
+    <script src="https://kit.fontawesome.com/ea4c135473.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+</head>
+<body>
+    <!-- Dashboard Loading State -->
+    <div id="dashboard-loading" class="dashboard-loading" style="display: flex;">
+        <div class="dashboard-loading-content">
+            <div class="dashboard-loading-spinner"></div>
+            <h2>Loading Dashboard...</h2>
+            <p>Preparing your inventory insights</p>
+        </div>
+    </div>
+    <!-- Use the original nav-bar from main_page.html -->
+    <nav class="nav-bar" role="navigation">
+        <a href="" class="logo">Invenarc</a>
+        <ul class="nav-links">
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="#" onclick="showComingSoon('Locations')">Locations</a></li>
+            <li><a href="#" onclick="showComingSoon('Shipments')">Shipments</a></li>
+            <li><a href="#" onclick="showComingSoon('Reports')">Reports</a></li>
+            <li><a onclick="window.location.href='admin_login.html'">Admin</a></li>
+        </ul>
+        <div class="social-icons">
+            <a href="https://github.com/Pranaysutharnew" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
+            <a href="https://linkedin.com/in/yourusername" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+            <a href="https://twitter.com/yourusername" target="_blank" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+            <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle theme">
+                <i class="fas fa-sun"></i>
+            </button>
+            <button id="profile-btn" class="profile-btn" onclick="openProfileModal()" aria-label="Profile" tabindex="0">
+                <i class="fas fa-user-circle"></i>
+            </button>
+            <button onclick="logout()" aria-label="Logout" tabindex="0"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
+    </nav>
+    <!-- Profile Modal -->
+    <div id="profile-modal" class="profile-modal" role="dialog" aria-modal="true">
+        <div class="profile-modal-content">
+            <div class="profile-modal-header">
+                <h2><i class="fas fa-user-circle"></i> User Profile</h2>
+                <button class="profile-close-btn" onclick="closeProfileModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="profile-modal-body">
+                <div class="profile-avatar">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="profile-info">
+                    <div class="profile-field">
+                        <label><i class="fas fa-user"></i> Full Name</label>
+                        <span id="profile-fullname" class="profile-loading">
+                            <div class="loading-spinner"></div>
+                            Loading...
+                        </span>
+                    </div>
+                    <div class="profile-field">
+                        <label><i class="fas fa-envelope"></i> Email</label>
+                        <span id="profile-email" class="profile-loading">
+                            <div class="loading-spinner"></div>
+                            Loading...
+                        </span>
+                    </div>
+                    <div class="profile-field">
+                        <label><i class="fas fa-calendar-alt"></i> Account Created</label>
+                        <span id="profile-created" class="profile-loading">
+                            <div class="loading-spinner"></div>
+                            Loading...
+                        </span>
+                    </div>
+                    <div class="profile-field">
+                        <label><i class="fas fa-shield-alt"></i> Account Status</label>
+                        <span id="profile-status" class="status-active profile-loading">
+                            <div class="loading-spinner"></div>
+                            Loading...
+                        </span>
+                    </div>
+                    <div class="profile-field">
+                        <label><i class="fas fa-user-tag"></i> Role</label>
+                        <span id="profile-role" class="profile-loading">
+                            <div class="loading-spinner"></div>
+                            Loading...
+                        </span>
+                    </div>
+                    <div class="profile-field">
+                        <label><i class="fas fa-clock"></i> Last Login</label>
+                        <span id="profile-lastLogin" class="profile-loading">
+                            <div class="loading-spinner"></div>
+                            Loading...
+                        </span>
+                    </div>
+                </div>
+                <div id="profile-error" class="error-message" style="display: none;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>Failed to load profile data. Please try again.</span>
+                </div>
+                <div class="profile-actions">
+                    <button class="profile-action-btn" onclick="refreshProfile()">
+                        <i class="fas fa-sync-alt"></i> Refresh Profile
+                    </button>
+                    <button class="profile-action-btn" onclick="editProfile()">
+                        <i class="fas fa-edit"></i> Edit Profile
+                    </button>
+                    <button class="profile-action-btn" onclick="changePassword()">
+                        <i class="fas fa-key"></i> Change Password
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay" style="display: none;" aria-busy="true">
+        <div class="loading-modal">
+            <div class="loading-spinner"></div>
+            <h3 id="loading-message" role="status">Loading...</h3>
+        </div>
+    </div>
+    <!-- Global Error/Success Messages Container -->
+    <div id="message-container" aria-live="polite" style="position: fixed; top: 20px; right: 20px; z-index: 10000; max-width: 400px;"></div>
+    <div class="dashboard-root">
+        <!-- Sidebar (collapsible) -->
+        <aside class="sidebar collapsed" id="sidebar">
+            <button id="sidebar-toggle" class="sidebar-toggle-btn" aria-label="Toggle sidebar" tabindex="0"></button>
+            <div class="sidebar-content">
+                <nav class="sidebar-nav" role="navigation">
+                    <a href="#" class="active" aria-current="page" tabindex="0"><i class="fas fa-tachometer-alt"></i> <span class="nav-text">Overview</span></a>
+                    <a href="#" tabindex="0"><i class="fas fa-boxes"></i> <span class="nav-text">Products</span></a>
+                    <a href="#" tabindex="0"><i class="fas fa-shopping-cart"></i> <span class="nav-text">Orders</span></a>
+                    <a href="#" tabindex="0"><i class="fas fa-truck"></i> <span class="nav-text">Suppliers</span></a>
+                    <a href="#" tabindex="0"><i class="fas fa-chart-line"></i> <span class="nav-text">Analytics</span></a>
+                    <a href="#" tabindex="0"><i class="fas fa-cogs"></i> <span class="nav-text">Settings</span></a>
+                </nav>
+                </div>
+        </aside>
+        <!-- Main Content -->
+        <div class="main-content" role="main">
+            <!-- Top Navbar -->
+            <div class="dashboard-title-area">
+                <span class="breadcrumbs">Home Page &gt; Dashboard</span>
+                <h1>Inventory Dashboard</h1>
+            </div>
+            <!-- Dashboard Grid -->
+            <div class="dashboard-grid">
+                <!-- Pro Version Card -->
+                <div class="dashboard-card" style="grid-row: 1 / span 2; grid-column: 1 / 2; align-items: center; justify-content: center; text-align: center;">
+                    <div class="card-title">Pro Version</div>
+                    <img src="https://assets-global.website-files.com/5d9bc5d562ffc2869b474b6a/63e3e2e2e2e2e2e2e2e2e2e2_eth.png" alt="Pro Version" style="width: 80px; margin: 0 auto 18px auto;">
+                    <div style="font-size: 1.1rem; margin-bottom: 12px;">Unlock advanced analytics and automation</div>
+                    <button class="add-btn" style="margin-top: 8px;">Upgrade</button>
+                    </div>
+                <!-- Activity Card (Bar Chart) -->
+                <div class="dashboard-card" style="grid-column: 2 / 3;">
+                    <div class="card-title">Activity</div>
+                    <div class="card-value">186</div>
+                    <div style="font-size: 0.95rem; color: #aaa;">Stock moved this week</div>
+                    <canvas id="activityChart" class="card-chart"></canvas>
+                </div>
+                <!-- Virtual Cards Card -->
+                <div class="dashboard-card" style="grid-column: 3 / 4;">
+                    <div class="card-title">Virtual Cards</div>
+                    <div class="card-value">$6,010.29</div>
+                    <div style="font-size: 0.95rem; color: #aaa;">Total balance</div>
+                    <div style="margin-top: 10px; font-size: 0.95rem;">Dollar: 72<br>Tether: 28</div>
+                </div>
+                <!-- VISA Card -->
+                <div class="dashboard-card" style="grid-column: 4 / 5; background: linear-gradient(135deg, #e0e7ff 60%, #c7f5f7 100%); align-items: flex-end; justify-content: flex-end;">
+                    <div style="width: 100%; text-align: right;">
+                        <div class="card-title" style="color: #222;">VISA</div>
+                        <div class="card-value" style="color: #222;">$390.00</div>
+                        <div style="font-size: 0.95rem; color: #555;">**** 8902</div>
+                        <div style="font-size: 0.9rem; color: #888;">09/28</div>
+                    </div>
+                </div>
+                <!-- Advantages Card (Line Chart) -->
+                <div class="dashboard-card" style="grid-column: 2 / 3;">
+                    <div class="card-title">Advantages</div>
+                    <div style="font-size: 0.95rem; color: #aaa;">Your savings with Pro version</div>
+                    <canvas id="advantagesChart" class="card-chart"></canvas>
+                    <button class="add-btn" style="margin-top: 12px;">Learn more</button>
+                </div>
+                <!-- Total Spent Card (Line Chart) -->
+                <div class="dashboard-card" style="grid-column: 3 / 4;">
+                    <div class="card-title">Total Spent</div>
+                    <div class="card-value">$820.65</div>
+                    <div style="font-size: 0.95rem; color: #aaa;">Spent this month</div>
+                    <canvas id="totalSpentChart" class="card-chart"></canvas>
+                </div>
+                <!-- Contract Type Card (Pie Chart) -->
+                <div class="dashboard-card" style="grid-column: 4 / 5;">
+                    <div class="card-title">Contract Type</div>
+                    <canvas id="contractTypeChart" class="card-chart" style="height: 80px !important;"></canvas>
+                    <div style="margin-top: 10px; font-size: 0.95rem;">86% Long<br>10% Milestone<br>4% Hourly</div>
+                </div>
+            </div>
+            <!-- Footer at the very end -->
+            <footer class="modern-footer" role="contentinfo" style="margin-top: 40px;">
+                <div class="footer-content">
+                    <div class="footer-main">
+                        <div class="footer-section company-info">
+                            <div class="footer-logo">
+                                <img src="favicon/favicon-32x32.png" alt="Invenarc Logo" />
+                                <h3>Invenarc</h3>
+                            </div>
+                            <p class="company-description">
+                                Revolutionizing inventory management with AI-powered solutions. 
+                                Streamline your operations, reduce costs, and boost efficiency.
+                            </p>
+                            <div class="social-links">
+                                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                                <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                                <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                                <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                            </div>
+                        </div>
+                        <div class="footer-section">
+                            <h4>Product Features</h4>
+                            <ul>
+                                <li><a href="#"><i class="fas fa-robot"></i> AI-Powered Analytics</a></li>
+                                <li><a href="#"><i class="fas fa-chart-line"></i> Real-time Monitoring</a></li>
+                                <li><a href="#"><i class="fas fa-sync-alt"></i> Auto Restock Alerts</a></li>
+                                <li><a href="#"><i class="fas fa-globe"></i> Multi-location Support</a></li>
+                                <li><a href="#"><i class="fas fa-shield-alt"></i> Secure Cloud Storage</a></li>
+                            </ul>
+                            </div>
+                        <div class="footer-section">
+                            <h4>Solutions</h4>
+                            <ul>
+                                <li><a href="#"><i class="fas fa-store"></i> Retail Management</a></li>
+                                <li><a href="#"><i class="fas fa-industry"></i> Manufacturing</a></li>
+                                <li><a href="#"><i class="fas fa-truck"></i> Logistics & Supply</a></li>
+                                <li><a href="#"><i class="fas fa-hospital"></i> Healthcare</a></li>
+                                <li><a href="#"><i class="fas fa-graduation-cap"></i> Education</a></li>
+                            </ul>
+                        </div>
+                        <div class="footer-section">
+                            <h4>Support & Resources</h4>
+                            <ul>
+                                <li><a href="#"><i class="fas fa-book"></i> Documentation</a></li>
+                                <li><a href="#"><i class="fas fa-video"></i> Video Tutorials</a></li>
+                                <li><a href="#"><i class="fas fa-headset"></i> 24/7 Support</a></li>
+                                <li><a href="#"><i class="fas fa-users"></i> Community Forum</a></li>
+                                <li><a href="#"><i class="fas fa-download"></i> API Reference</a></li>
+                            </ul>
+                        </div>
+                        <div class="footer-section newsletter">
+                            <h4>Stay Updated</h4>
+                            <p>Get the latest updates on new features and industry insights.</p>
+                            <form class="newsletter-form">
+                                <div class="input-group">
+                                    <input type="email" placeholder="Enter your email" required />
+                                    <button type="submit">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </button>
+                            </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="footer-bottom">
+                        <div class="footer-bottom-content">
+                            <div class="copyright">
+                                <p>&copy; 2025 Invenarc. All rights reserved. | <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
+                            </div>
+                            <div class="footer-stats">
+                                <span><i class="fas fa-users"></i> 10,000+ Users</span>
+                                <span><i class="fas fa-globe"></i> 50+ Countries</span>
+                                <span><i class="fas fa-star"></i> 4.9/5 Rating</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+    <!-- Chart.js scripts for demo charts -->
+    <script>
+        // Performance optimization: Lazy load charts
+        const chartObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const chartId = entry.target.id;
+                    initializeChart(chartId);
+                    chartObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        // Initialize charts when they come into view
+        document.addEventListener('DOMContentLoaded', () => {
+            const chartElements = document.querySelectorAll('.card-chart');
+            chartElements.forEach(chart => {
+                chart.classList.add('skeleton');
+                chartObserver.observe(chart);
+            });
+
+            // Hide dashboard loading after a short delay
+            setTimeout(() => {
+                const dashboardLoading = document.getElementById('dashboard-loading');
+                if (dashboardLoading) {
+                    dashboardLoading.classList.add('hidden');
+                    setTimeout(() => {
+                        dashboardLoading.style.display = 'none';
+                    }, 500);
+                }
+            }, 1000);
+        });
+
+        // Chart initialization function
+        function initializeChart(chartId) {
+            const chartElement = document.getElementById(chartId);
+            if (!chartElement) return;
+
+            // Remove skeleton loader
+            chartElement.classList.remove('skeleton');
+
+            try {
+                switch(chartId) {
+                    case 'activityChart':
+                        new Chart(chartElement, {
+                            type: 'bar',
+                            data: {
+                                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                                datasets: [{
+                                    label: 'Stock Moved',
+                                    data: [24, 32, 18, 40, 22, 30, 20],
+                                    backgroundColor: '#161dff',
+                                    borderRadius: 8,
+                                    barThickness: 18
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: { legend: { display: false } },
+                                scales: {
+                                    x: { grid: { display: false } },
+                                    y: { grid: { display: false }, beginAtZero: true }
+                                }
+                            }
+                        });
+                        break;
+
+                    case 'advantagesChart':
+                        new Chart(chartElement, {
+                            type: 'line',
+                            data: {
+                                labels: ['1', '2', '3', '4', '5', '6', '7', '8'],
+                                datasets: [{
+                                    label: 'Savings',
+                                    data: [10, 12, 15, 18, 22, 25, 28, 30],
+                                    borderColor: '#27c9d1',
+                                    backgroundColor: 'rgba(39,201,209,0.08)',
+                                    tension: 0.4,
+                                    fill: true,
+                                    pointRadius: 0
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: { legend: { display: false } },
+                                scales: {
+                                    x: { display: false },
+                                    y: { display: false }
+                                }
+                            }
+                        });
+                        break;
+
+                    case 'totalSpentChart':
+                        new Chart(chartElement, {
+                            type: 'line',
+                            data: {
+                                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                                datasets: [{
+                                    label: 'Spent',
+                                    data: [120, 140, 110, 180, 160, 130, 120],
+                                    borderColor: '#fe7200',
+                                    backgroundColor: 'rgba(254,114,0,0.08)',
+                                    tension: 0.4,
+                                    fill: true,
+                                    pointRadius: 0
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: { legend: { display: false } },
+                                scales: {
+                                    x: { display: false },
+                                    y: { display: false }
+                                }
+                            }
+                        });
+                        break;
+
+                    case 'contractTypeChart':
+                        new Chart(chartElement, {
+                            type: 'doughnut',
+                            data: {
+                                labels: ['Long', 'Milestone', 'Hourly'],
+                                datasets: [{
+                                    data: [86, 10, 4],
+                                    backgroundColor: ['#161dff', '#27c9d1', '#fe7200'],
+                                    borderWidth: 0
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: { legend: { display: false } },
+                                cutout: '70%'
+                            },
+                            plugins: [{
+                                beforeDraw: function(chart) {
+                                    var width = chart.width,
+                                        height = chart.height,
+                                        ctx = chart.ctx;
+                                    ctx.restore();
+                                    var fontSize = (height / 6).toFixed(2);
+                                    ctx.font = fontSize + "px Satoshi, Arial, sans-serif";
+                                    ctx.textBaseline = "middle";
+                                    var text = "86%",
+                                        textX = Math.round((width - ctx.measureText("86%" ).width) / 2),
+                                        textY = height / 2 - 10;
+                                    ctx.fillStyle = '#161dff';
+                                    ctx.fillText("86%", textX, textY);
+                                    ctx.font = (fontSize * 0.7) + "px Satoshi, Arial, sans-serif";
+                                    ctx.fillStyle = '#888';
+                                    ctx.fillText("Long", Math.round((width - ctx.measureText("Long").width) / 2), textY + 22);
+                                    ctx.save();
+                                }
+                            }]
+                        });
+                        break;
+                }
+            } catch (error) {
+                console.error(`Failed to initialize chart ${chartId}:`, error);
+                chartElement.innerHTML = '<div style="text-align: center; color: #666; padding: 20px;">Chart loading failed</div>';
+            }
+        }
+
+        // Enhanced sidebar expand/collapse logic with improved touch gestures
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchEndX = 0;
+        let touchEndY = 0;
+        let isSwiping = false;
+        let swipeStartTime = 0;
+
+        // Click toggle
+        sidebarToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            toggleSidebar();
+        });
+
+        // Enhanced touch gesture support for mobile
+        document.addEventListener('touchstart', function(e) {
+            touchStartX = e.changedTouches[0].screenX;
+            touchStartY = e.changedTouches[0].screenY;
+            swipeStartTime = Date.now();
+            isSwiping = false;
+        }, { passive: true });
+
+        document.addEventListener('touchmove', function(e) {
+            if (Math.abs(e.changedTouches[0].screenX - touchStartX) > 10) {
+                isSwiping = true;
+            }
+        }, { passive: true });
+
+        document.addEventListener('touchend', function(e) {
+            if (!isSwiping) return;
+            
+            touchEndX = e.changedTouches[0].screenX;
+            touchEndY = e.changedTouches[0].screenY;
+            const swipeTime = Date.now() - swipeStartTime;
+            
+            handleSwipe(swipeTime);
+        }, { passive: true });
+
+        function handleSwipe(swipeTime) {
+            const swipeThreshold = 50;
+            const swipeDistance = touchEndX - touchStartX;
+            const swipeDistanceY = Math.abs(touchEndY - touchStartY);
+            const isHorizontalSwipe = Math.abs(swipeDistance) > swipeDistanceY;
+            const isFastSwipe = swipeTime < 300;
+            
+            // Only handle horizontal swipes
+            if (!isHorizontalSwipe) return;
+            
+            // Swipe right to open sidebar (only on mobile and from left edge)
+            if (swipeDistance > swipeThreshold && window.innerWidth <= 768 && touchStartX < 50) {
+                if (!sidebar.classList.contains('expanded')) {
+                    openSidebar();
+                }
+            }
+            
+            // Swipe left to close sidebar
+            if (swipeDistance < -swipeThreshold && sidebar.classList.contains('expanded')) {
+                closeSidebar();
+            }
+        }
+
+        function toggleSidebar() {
+            if (sidebar.classList.contains('expanded')) {
+                closeSidebar();
+            } else {
+                openSidebar();
+            }
+        }
+
+        function openSidebar() {
+            sidebar.classList.add('expanded');
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        }
+
+        function closeSidebar() {
+            sidebar.classList.remove('expanded');
+            document.body.style.overflow = ''; // Restore scrolling
+        }
+
+        // Close sidebar when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!sidebar.contains(e.target) && !sidebarToggle.contains(e.target) && sidebar.classList.contains('expanded')) {
+                closeSidebar();
+            }
+        });
+
+        // Close sidebar on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && sidebar.classList.contains('expanded')) {
+                closeSidebar();
+            }
+        });
+
+        // Prevent sidebar from opening when scrolling on mobile
+        let lastScrollTop = 0;
+        document.addEventListener('scroll', function() {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            if (Math.abs(scrollTop - lastScrollTop) > 5) {
+                isSwiping = false;
+            }
+            lastScrollTop = scrollTop;
+        }, { passive: true });
+    </script>
+    <!-- Main Page Feature Parity Scripts -->
+    <script>
+        // Theme Toggle
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const body = document.body;
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            body.setAttribute('data-theme', savedTheme);
+            themeToggleBtn.innerHTML = savedTheme === 'dark'
+                ? '<i class="fas fa-moon"></i>'
+                : '<i class="fas fa-sun"></i>';
+        });
+        themeToggleBtn.addEventListener('click', () => {
+            const currentTheme = body.getAttribute('data-theme');
+            if (currentTheme === 'light') {
+                body.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i>';
+            } else {
+                body.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light');
+                themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        });
+        // Logout
+        function logout() {
+            showLoadingOverlay("Logging out...");
+            setTimeout(() => {
+                localStorage.removeItem("jwt");
+                showSuccessMessage("Logged out successfully!", 2000);
+                setTimeout(() => {
+                    window.location.href = "admin_login.html";
+                }, 1000);
+            }, 500);
+        }
+        // Profile Modal Functions
+        function openProfileModal() {
+            const modal = document.getElementById('profile-modal');
+            const profileBtn = document.getElementById('profile-btn');
+            const modalContent = modal.querySelector('.profile-modal-content');
+            const btnRect = profileBtn.getBoundingClientRect();
+            const btnCenterX = btnRect.left + btnRect.width / 2;
+            const btnCenterY = btnRect.top + btnRect.height / 2;
+            profileBtn.style.opacity = '0';
+            modalContent.style.left = btnCenterX + 'px';
+            modalContent.style.top = btnCenterY + 'px';
+            modalContent.style.transform = 'translate(-50%, -50%) scale(0.1)';
+            modalContent.style.borderRadius = '50%';
+            modalContent.style.opacity = '1';
+            modal.style.display = 'flex';
+            setTimeout(() => {
+                modalContent.style.transition = 'all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                modalContent.style.left = '50%';
+                modalContent.style.top = '120px';
+                modalContent.style.transform = 'translateX(-50%) scale(1)';
+                modalContent.style.borderRadius = '20px';
+            }, 10);
+            loadUserProfile();
+        }
+        function closeProfileModal() {
+            const modal = document.getElementById('profile-modal');
+            const profileBtn = document.getElementById('profile-btn');
+            const modalContent = modal.querySelector('.profile-modal-content');
+            const btnRect = profileBtn.getBoundingClientRect();
+            const btnCenterX = btnRect.left + btnRect.width / 2;
+            const btnCenterY = btnRect.top + btnRect.height / 2;
+            modalContent.style.transition = 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+            modalContent.style.left = btnCenterX + 'px';
+            modalContent.style.top = btnCenterY + 'px';
+            modalContent.style.transform = 'translate(-50%, -50%) scale(0.1)';
+            modalContent.style.borderRadius = '50%';
+            profileBtn.style.opacity = '1';
+            setTimeout(() => {
+                modal.style.display = 'none';
+                modalContent.style.transition = 'none';
+            }, 300);
+        }
+        window.onclick = function(event) {
+            const modal = document.getElementById('profile-modal');
+            if (event.target === modal) {
+                closeProfileModal();
+            }
+        }
+        async function loadUserProfile() {
+            const token = localStorage.getItem("jwt");
+            if (!token) {
+                console.log("No token found");
+                showErrorMessage("No authentication token found. Please log in again.");
+                return;
+            }
+            showProfileLoading(true);
+            hideProfileError();
+            try {
+                const response = await fetch("http://localhost:8080/api/profile", {
+                    method: 'GET',
+                    headers: {
+                        "Authorization": "Bearer " + token,
+                        "Content-Type": "application/json"
+                    }
+                });
+                if (response.ok) {
+                    const userData = await response.json();
+                    const profileData = {
+                        fullName: userData.fullName || userData.name || userData.username || 'User',
+                        email: userData.email || userData.emailAddress || 'No email provided',
+                        createdAt: userData.createdAt || userData.createdDate || userData.registrationDate || 'Unknown',
+                        status: userData.status || userData.accountStatus || userData.isActive ? 'Active' : 'Inactive',
+                        role: userData.role || 'User',
+                        lastLogin: userData.lastLogin || 'Never logged in'
+                    };
+                    updateProfileDisplay(profileData);
+                    showSuccessMessage("Profile loaded successfully!", 3000);
+                } else if (response.status === 404) {
+                    await loadProfileFromProtectedEndpoint(token);
+                } else {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${response.statusText} - ${errorText}`);
+                }
+            } catch (error) {
+                try {
+                    await loadProfileFromProtectedEndpoint(token);
+                } catch (fallbackError) {
+                    updateProfileDisplay(getFallbackUserData());
+                    showProfileError();
+                    showErrorMessage("Failed to load profile from server. Using demo data.");
+                }
+            } finally {
+                showProfileLoading(false);
+            }
+        }
+        async function loadProfileFromProtectedEndpoint(token) {
+            const response = await fetch("http://localhost:8080/api/protected", {
+                method: 'GET',
+                headers: {
+                    "Authorization": "Bearer " + token,
+                    "Content-Type": "application/json"
+                }
+            });
+            if (response.ok) {
+                const userData = await response.json();
+                const profileData = {
+                    fullName: userData.fullName || userData.name || userData.username || userData.user?.name || 'User',
+                    email: userData.email || userData.emailAddress || userData.user?.email || 'No email provided',
+                    createdAt: userData.createdAt || userData.createdDate || userData.registrationDate || userData.user?.createdAt || 'Unknown',
+                    status: userData.status || userData.accountStatus || (userData.user?.isActive !== undefined ? (userData.user.isActive ? 'Active' : 'Inactive') : 'Active'),
+                    role: userData.role || 'User',
+                    lastLogin: userData.lastLogin || 'Never logged in'
+                };
+                updateProfileDisplay(profileData);
+                showInfoMessage("Profile loaded from fallback endpoint");
+            } else {
+                throw new Error(`Protected endpoint failed: ${response.status}`);
+            }
+        }
+        function showProfileLoading(show) {
+            const loadingElements = document.querySelectorAll('.profile-loading');
+            loadingElements.forEach(element => {
+                if (show) {
+                    element.innerHTML = '<div class="loading-spinner"></div>Loading...';
+                } else {
+                    element.classList.remove('profile-loading');
+                }
+            });
+        }
+        function hideProfileError() {
+            const errorElement = document.getElementById('profile-error');
+            if (errorElement) {
+                errorElement.style.display = 'none';
+            }
+        }
+        function showProfileError() {
+            const errorElement = document.getElementById('profile-error');
+            if (errorElement) {
+                errorElement.style.display = 'flex';
+            }
+        }
+        // Utility functions for loading and error handling
+        function showLoadingOverlay(message = "Loading...") {
+            const overlay = document.getElementById('loading-overlay');
+            const messageElement = document.getElementById('loading-message');
+            if (overlay && messageElement) {
+                messageElement.textContent = message;
+                overlay.style.display = 'flex';
+            }
+        }
+        function hideLoadingOverlay() {
+            const overlay = document.getElementById('loading-overlay');
+            if (overlay) {
+                overlay.style.display = 'none';
+            }
+        }
+        function showMessage(type, message, duration = 5000) {
+            const container = document.getElementById('message-container');
+            if (!container) return;
+            const messageElement = document.createElement('div');
+            messageElement.className = `${type}-message`;
+            messageElement.innerHTML = `
+                <i class="fas fa-${type === 'error' ? 'exclamation-triangle' : type === 'success' ? 'check-circle' : 'info-circle'}"></i>
+                <span>${message}</span>
+                <button onclick="this.parentElement.remove()" style="background: none; border: none; color: inherit; cursor: pointer; margin-left: auto;">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            container.appendChild(messageElement);
+            setTimeout(() => {
+                if (messageElement.parentElement) {
+                    messageElement.remove();
+                }
+            }, duration);
+        }
+        function showErrorMessage(message, duration) {
+            showMessage('error', message, duration);
+        }
+        function showSuccessMessage(message, duration) {
+            showMessage('success', message, duration);
+        }
+        function showInfoMessage(message, duration) {
+            showMessage('info', message, duration);
+        }
+        function updateProfileDisplay(userData) {
+            document.getElementById('profile-fullname').textContent = userData.fullName || 'John Doe';
+            document.getElementById('profile-email').textContent = userData.email || 'john.doe@example.com';
+            document.getElementById('profile-created').textContent = userData.createdAt || 'January 2024';
+            document.getElementById('profile-status').textContent = userData.status || 'Active';
+            document.getElementById('profile-role').textContent = userData.role || 'User';
+            document.getElementById('profile-lastLogin').textContent = userData.lastLogin || 'Never logged in';
+        }
+        function getFallbackUserData() {
+            return {
+                fullName: 'Demo User',
+                email: 'demo@invenarc.com',
+                createdAt: 'January 2024',
+                status: 'Active',
+                role: 'User',
+                lastLogin: 'Never logged in'
+            };
+        }
+        function editProfile() {
+            showLoadingOverlay("Opening profile editor...");
+            setTimeout(() => {
+                hideLoadingOverlay();
+                showInfoMessage("Edit profile functionality coming soon!");
+            }, 1000);
+        }
+        function changePassword() {
+            showLoadingOverlay("Opening password change...");
+            setTimeout(() => {
+                hideLoadingOverlay();
+                showInfoMessage("Change password functionality coming soon!");
+            }, 1000);
+        }
+        function refreshProfile() {
+            showLoadingOverlay("Refreshing profile data...");
+            setTimeout(() => {
+                hideLoadingOverlay();
+                loadUserProfile();
+            }, 500);
+        }
+        // Coming soon message for nav links
+        function showComingSoon(feature) {
+            showInfoMessage(`${feature} feature is coming soon! Stay tuned for updates.`);
+        }
+    </script>
+</body>
+</html> 

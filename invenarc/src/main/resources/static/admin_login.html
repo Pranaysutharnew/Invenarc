@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invenarc Login</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
+    <link rel="manifest" href="favicon/site.webmanifest">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/modern_login.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header Bar -->
+        <header class="header">
+            <div class="header-left">
+                <a href="main_page.html" class="logo">Invenarc</a>
+        </div>
+            <div class="header-icons">
+                <button class="theme-toggle hoverable" id="themeToggle" title="Toggle theme">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2m0 18v2m11-11h-2M3 12H1m16.95 6.95-1.41-1.41M6.34 6.34 4.93 4.93m12.02 0-1.41 1.41M6.34 17.66l-1.41 1.41"/></svg>
+            </button>
+                <a href="https://github.com/" target="_blank" class="nav-icon hoverable" title="GitHub"><i class="fab fa-github"></i></a>
+                <a href="https://linkedin.com/" target="_blank" class="nav-icon hoverable" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                <a href="https://instagram.com/" target="_blank" class="nav-icon hoverable" title="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="about-btn hoverable"><i class="fas fa-info-circle"></i> About</a>
+        </div>
+            <button class="header-login hoverable" id="switchToLoginBtn">Login</button>
+        </header>
+        <main class="main-content">
+            <!-- Left Section -->
+            <section class="main-left">
+                <div class="main-left-inner">
+                    <div class="main-left-label">AI-POWERED INVENTORY MANAGEMENT</div>
+                    <h1 class="main-left-title">
+                        TRANSFORM YOUR <br>
+                        <span class="highlight">INVENTORY WITH</span><br>
+                        AI INNOVATION.
+                        <span class="green-circles">
+                            <span class="circle"></span>
+                            <span class="circle"></span>
+                            <span class="circle"></span>
+                        </span>
+                    </h1>
+                    <div class="main-left-account">
+                        <span>New to Invenarc?</span><br>
+                        <a href="#" class="create-account hoverable" id="createAccountBtn">Create account →</a>
+                    </div>
+                    <div class="about-card">
+                        <img src="images/about-sec-1.jpeg" alt="Inventory Management" class="about-img">
+                        <div class="about-info">
+                            <span class="about-title">Smart Inventory</span>
+                            <span class="about-desc">Revolutionize your inventory with <b>AI-driven insights</b> and real-time management capabilities.</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- Right Section -->
+            <section class="main-right">
+                <div class="login-card">
+                    <h2 class="login-title" id="loginTitle">Login to your account</h2>
+                    <form class="login-form active" id="loginForm">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" placeholder="your@email.com" required>
+                        <label for="password">Password</label>
+                        <div class="password-input-wrapper">
+                            <input type="password" id="password" name="password" placeholder="********" required>
+                            <button type="button" class="password-toggle" onclick="togglePasswordVisibility('password')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                        </div>
+                        <div class="login-options">
+                            <label class="remember-me">
+                                <input type="checkbox" id="remember">
+                                <span class="custom-checkbox"></span>
+                                Remember me
+                            </label>
+                            <a href="#" class="forgot-password" id="forgotPasswordLink">Forgot your password?</a>
+                        </div>
+                        <button type="submit" class="login-btn hoverable">
+                            <span class="btn-text">login</span>
+                            <span class="btn-loader" style="display: none;">
+                                <i class="fas fa-spinner fa-spin"></i>
+                            </span>
+                        </button>
+                        <div id="loginMessage" class="message"></div>
+                    </form>
+                    <form class="signup-form" id="signupForm">
+                        <div class="signup-names-row">
+                            <div class="signup-name-field">
+                                <label for="signup-firstname">First Name</label>
+                                <input type="text" id="signup-firstname" name="signup-firstname" placeholder="First name" required>
+                            </div>
+                            <div class="signup-name-field">
+                                <label for="signup-lastname">Last Name</label>
+                                <input type="text" id="signup-lastname" name="signup-lastname" placeholder="Last name" required>
+                            </div>
+                        </div>
+                        <label for="signup-email">Email</label>
+                        <input type="email" id="signup-email" name="signup-email" placeholder="Enter your email" required>
+                        <label for="signup-password">Password</label>
+                        <div class="password-input-wrapper">
+                            <input type="password" id="signup-password" name="signup-password" placeholder="Create a password" required oninput="checkPasswordStrength(this.value)">
+                            <button type="button" class="password-toggle" onclick="togglePasswordVisibility('signup-password')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <div class="password-strength-meter">
+                            <div class="strength-bar">
+                                <div class="strength-fill" id="strengthFill"></div>
+                            </div>
+                            <span class="strength-text" id="strengthText">Enter a password</span>
+                        </div>
+                        <button type="submit" class="login-btn hoverable">
+                            <span class="btn-text">Sign Up</span>
+                            <span class="btn-loader" style="display: none;">
+                                <i class="fas fa-spinner fa-spin"></i>
+                            </span>
+                        </button>
+                        <div id="signupMessage" class="message"></div>
+                        <button type="button" class="back-to-login hoverable">Back to Login</button>
+                    </form>
+                    <form class="forgot-password-form" id="forgotPasswordForm">
+                        <label for="forgot-email">Email</label>
+                        <input type="email" id="forgot-email" name="forgot-email" placeholder="Enter your email" required>
+                        <button type="submit" class="login-btn hoverable">
+                            <span class="btn-text">Reset Password</span>
+                            <span class="btn-loader" style="display: none;">
+                                <i class="fas fa-spinner fa-spin"></i>
+                            </span>
+                        </button>
+                        <div id="forgotPasswordMessage" class="message"></div>
+                        <button type="button" class="back-to-login hoverable">Back to Login</button>
+                    </form>
+                </div>
+            </section>
+        </main>
+            </div>
+    <div id="toast" class="toast-notification"></div>
+    <!-- Custom Cursor HTML -->
+    <div class="cursor">
+        <svg height="30" width="30" class="cursor__ball cursor__ball--big">
+            <circle cx="15" cy="15" r="15" fill="#161dff"></circle>
+        </svg>
+        <svg height="10" width="10" class="cursor__ball cursor__ball--small">
+            <circle cx="5" cy="5" r="5" fill="#ff3cb7"></circle>
+        </svg>
+    </div>
+</body>
+    <script>
+// Animated switch between login and signup forms
+const createAccountBtn = document.getElementById('createAccountBtn');
+const loginForm = document.getElementById('loginForm');
+const signupForm = document.getElementById('signupForm');
+const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+const loginTitle = document.getElementById('loginTitle');
+const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+
+createAccountBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    loginForm.classList.add('fade-out');
+    setTimeout(() => {
+        loginForm.classList.remove('active', 'fade-in', 'fade-out');
+        signupForm.classList.add('active', 'fade-in');
+        loginTitle.textContent = 'Create your account';
+    }, 300);
+});
+
+signupForm.querySelector('.back-to-login').addEventListener('click', function(e) {
+    e.preventDefault();
+    signupForm.classList.remove('fade-in');
+    signupForm.classList.add('fade-out');
+    setTimeout(() => {
+        signupForm.classList.remove('active', 'fade-in', 'fade-out');
+        loginForm.classList.add('active', 'fade-in');
+        loginTitle.textContent = 'Login to your account';
+    }, 300);
+});
+
+// Forgot password functionality
+forgotPasswordLink.addEventListener('click', function(e) {
+    e.preventDefault();
+    loginForm.classList.add('fade-out');
+    setTimeout(() => {
+        loginForm.classList.remove('active', 'fade-in', 'fade-out');
+        forgotPasswordForm.classList.add('active', 'fade-in');
+        loginTitle.textContent = 'Reset your password';
+    }, 300);
+});
+
+forgotPasswordForm.querySelector('.back-to-login').addEventListener('click', function(e) {
+    e.preventDefault();
+    forgotPasswordForm.classList.remove('fade-in');
+    forgotPasswordForm.classList.add('fade-out');
+    setTimeout(() => {
+        forgotPasswordForm.classList.remove('active', 'fade-in', 'fade-out');
+        loginForm.classList.add('active', 'fade-in');
+        loginTitle.textContent = 'Login to your account';
+    }, 300);
+});
+
+// Remove animation classes after animation
+loginForm.addEventListener('animationend', () => {
+    loginForm.classList.remove('fade-in', 'fade-out');
+});
+signupForm.addEventListener('animationend', () => {
+    signupForm.classList.remove('fade-in', 'fade-out');
+});
+forgotPasswordForm.addEventListener('animationend', () => {
+    forgotPasswordForm.classList.remove('fade-in', 'fade-out');
+});
+
+// Switch to login form from header button
+const switchToLoginBtn = document.getElementById('switchToLoginBtn');
+switchToLoginBtn.addEventListener('click', function(e) {
+    if (!loginForm.classList.contains('active')) {
+        signupForm.classList.remove('active', 'fade-in', 'fade-out');
+        loginForm.classList.add('active', 'fade-in');
+        loginTitle.textContent = 'Login to your account';
+    }
+});
+
+// Toast notification logic
+function showToast(message, type = 'success') {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.className = `toast-notification show ${type}`;
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 2600);
+}
+
+// --- Backend support for login ---
+document.getElementById('loginForm').addEventListener('submit', async function(event) {
+    event.preventDefault();
+    const messageDiv = document.getElementById('loginMessage');
+    messageDiv.textContent = '';
+    messageDiv.className = 'message';
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    
+    if (!email || !password) {
+        messageDiv.textContent = 'Please fill in all fields.';
+        messageDiv.className = 'message visible error';
+        return;
+    }
+    
+    setLoadingState('loginForm', true);
+    
+    try {
+        const res = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
+        const data = await res.text();
+        if (res.ok && data.includes('.') && data.split('.').length === 3) {
+            localStorage.setItem('jwt', data);
+            showToast('Login successful! Redirecting...', 'success');
+            setTimeout(() => {
+                window.location.href = 'main_page.html';
+            }, 1200);
+                } else {
+            messageDiv.textContent = data || 'Login failed.';
+            messageDiv.className = 'message visible error';
+            showToast(data || 'Invalid credentials. Please try again.', 'error');
+        }
+    } catch (err) {
+        messageDiv.textContent = 'Network error. Please try again.';
+        messageDiv.className = 'message visible error';
+    } finally {
+        setLoadingState('loginForm', false);
+    }
+});
+
+// --- Backend support for sign up ---
+document.getElementById('signupForm').addEventListener('submit', async function(event) {
+    event.preventDefault();
+    const messageDiv = document.getElementById('signupMessage');
+    messageDiv.textContent = '';
+    messageDiv.className = 'message';
+    const firstName = document.getElementById('signup-firstname').value.trim();
+    const lastName = document.getElementById('signup-lastname').value.trim();
+    const email = document.getElementById('signup-email').value.trim();
+    const password = document.getElementById('signup-password').value;
+    
+    if (!firstName || !lastName || !email || !password) {
+        messageDiv.textContent = 'Please fill in all fields.';
+        messageDiv.className = 'message visible error';
+        return;
+    }
+    
+    setLoadingState('signupForm', true);
+    
+    try {
+        const res = await fetch('/api/auth/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ firstName, lastName, email, password })
+        });
+        const data = await res.text();
+        if (res.ok && (data.toLowerCase().includes('success') || data.toLowerCase().includes('created'))) {
+            showToast('Account created! Please log in.', 'success');
+            setTimeout(() => {
+                document.querySelector('.back-to-login').click();
+            }, 1200);
+        } else {
+            messageDiv.textContent = data || 'Sign up failed.';
+            messageDiv.className = 'message visible error';
+        }
+    } catch (err) {
+        messageDiv.textContent = 'Network error. Please try again.';
+        messageDiv.className = 'message visible error';
+    } finally {
+        setLoadingState('signupForm', false);
+    }
+});
+
+// --- Backend support for forgot password ---
+document.getElementById('forgotPasswordForm').addEventListener('submit', async function(event) {
+    event.preventDefault();
+    const messageDiv = document.getElementById('forgotPasswordMessage');
+    messageDiv.textContent = '';
+    messageDiv.className = 'message';
+    const email = document.getElementById('forgot-email').value.trim();
+    
+    if (!email) {
+        messageDiv.textContent = 'Please enter your email address.';
+        messageDiv.className = 'message visible error';
+        return;
+    }
+    
+    setLoadingState('forgotPasswordForm', true);
+    
+    try {
+        // For now, show a success message since we don't have a backend endpoint
+        // In a real implementation, you would call your backend API here
+        showToast('Password reset link sent to your email!', 'success');
+        messageDiv.textContent = 'If an account with this email exists, you will receive a password reset link.';
+        messageDiv.className = 'message visible success';
+        
+        // Clear the form
+        document.getElementById('forgot-email').value = '';
+        
+        // Optionally redirect back to login after a delay
+        setTimeout(() => {
+            document.querySelector('.forgot-password-form .back-to-login').click();
+        }, 3000);
+        
+    } catch (err) {
+        messageDiv.textContent = 'Network error. Please try again.';
+        messageDiv.className = 'message visible error';
+    } finally {
+        setLoadingState('forgotPasswordForm', false);
+    }
+});
+
+// Custom Cursor JS
+const $bigBall = document.querySelector('.cursor__ball--big');
+const $smallBall = document.querySelector('.cursor__ball--small');
+const $hoverables = document.querySelectorAll('.hoverable');
+
+// Logo click handler - check if user is logged in
+document.querySelector('.logo').addEventListener('click', function(e) {
+    e.preventDefault();
+    const jwt = localStorage.getItem('jwt');
+    if (!jwt) {
+        showToast('Please login first to access the main page.', 'error');
+    } else {
+        window.location.href = 'main_page.html';
+    }
+});
+
+document.body.addEventListener('mousemove', onMouseMove);
+for (let i = 0; i < $hoverables.length; i++) {
+    $hoverables[i].addEventListener('mouseenter', onMouseHover);
+    $hoverables[i].addEventListener('mouseleave', onMouseHoverOut);
+}
+function onMouseMove(e) {
+    gsap.to($bigBall, { duration: 0.4, x: e.clientX - 15, y: e.clientY - 15 });
+    gsap.to($smallBall, { duration: 0.1, x: e.clientX - 5, y: e.clientY - 5 });
+}
+function onMouseHover() {
+    gsap.timeline()
+        .to($bigBall, { duration: 0.18, scaleX: 2.5, scaleY: 0.7, opacity: 0.8, ease: "power1.out" })
+        .to($bigBall, { duration: 0.32, scaleX: 1.3, scaleY: 1, opacity: 0.7, ease: "elastic.out(1, 0.4)" });
+                }
+function onMouseHoverOut() {
+    gsap.timeline()
+        .to($bigBall, { duration: 0.18, scaleX: 0.7, scaleY: 1.3, opacity: 1, ease: "power1.out" })
+        .to($bigBall, { duration: 0.32, scaleX: 1, scaleY: 1, opacity: 1, ease: "elastic.out(1, 0.4)" });
+}
+
+// Password Visibility Toggle
+        function togglePasswordVisibility(inputId) {
+            const input = document.getElementById(inputId);
+    const toggleBtn = input.parentElement.querySelector('.password-toggle i');
+    
+            if (input.type === 'password') {
+                input.type = 'text';
+        toggleBtn.className = 'fas fa-eye-slash';
+            } else {
+                input.type = 'password';
+        toggleBtn.className = 'fas fa-eye';
+            }
+        }
+
+// Password Strength Checker
+function checkPasswordStrength(password) {
+    const strengthFill = document.getElementById('strengthFill');
+    const strengthText = document.getElementById('strengthText');
+    
+    if (!password) {
+        strengthFill.className = 'strength-fill';
+        strengthText.className = 'strength-text';
+        strengthText.textContent = 'Enter a password';
+                return;
+            }
+    
+    let score = 0;
+    let feedback = [];
+    
+    // Length check
+    if (password.length >= 8) {
+        score += 1;
+    } else {
+        feedback.push('At least 8 characters');
+    }
+    
+    // Lowercase check
+    if (/[a-z]/.test(password)) {
+        score += 1;
+                } else {
+        feedback.push('Lowercase letter');
+    }
+    
+    // Uppercase check
+    if (/[A-Z]/.test(password)) {
+        score += 1;
+    } else {
+        feedback.push('Uppercase letter');
+    }
+    
+    // Number check
+    if (/\d/.test(password)) {
+        score += 1;
+    } else {
+        feedback.push('Number');
+    }
+    
+    // Special character check
+    if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+        score += 1;
+                } else {
+        feedback.push('Special character');
+                }
+    
+    // Update UI
+    strengthFill.className = 'strength-fill';
+    strengthText.className = 'strength-text';
+    
+    if (score <= 1) {
+        strengthFill.classList.add('weak');
+        strengthText.classList.add('weak');
+        strengthText.textContent = 'Weak password';
+    } else if (score <= 2) {
+        strengthFill.classList.add('fair');
+        strengthText.classList.add('fair');
+        strengthText.textContent = 'Fair password';
+    } else if (score <= 3) {
+        strengthFill.classList.add('good');
+        strengthText.classList.add('good');
+        strengthText.textContent = 'Good password';
+    } else {
+        strengthFill.classList.add('strong');
+        strengthText.classList.add('strong');
+        strengthText.textContent = 'Strong password';
+    }
+}
+
+// Loading State Management
+function setLoadingState(formId, isLoading) {
+    const form = document.getElementById(formId);
+    const submitBtn = form.querySelector('.login-btn');
+    
+    if (isLoading) {
+        submitBtn.classList.add('loading');
+        submitBtn.disabled = true;
+            } else {
+        submitBtn.classList.remove('loading');
+        submitBtn.disabled = false;
+    }
+            }
+    </script>
+</html>

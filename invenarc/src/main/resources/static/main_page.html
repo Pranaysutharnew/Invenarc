@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invenarc - Inventory Management</title>
+    <!-- favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
+    <link rel="manifest" href="favicon/site.webmanifest">
+
+    <link rel="stylesheet" href="css/main_page.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700&display=swap" rel="stylesheet">
+
+    <!-- Add AOS CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+
+    <script src="https://kit.fontawesome.com/ea4c135473.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+
+    <!-- lottie animation -->
+    <script
+  src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs"
+  type="module"
+></script>
+
+</head>
+<body>
+    <div class="hero-section">
+        <nav class="nav-bar">
+            <a href="" class="logo">Invenarc</a>
+            <ul class="nav-links">
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="#" onclick="showComingSoon('Locations')">Locations</a></li>
+            <li><a href="#" onclick="showComingSoon('Shipments')">Shipments</a></li>
+            <li><a href="#" onclick="showComingSoon('Reports')">Reports</a></li>
+            <li><a onclick="window.location.href='admin_login.html'">Admin</a></li>
+            </ul>
+            <div class="social-icons">
+                <a href="https://github.com/Pranaysutharnew" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                <a href="https://linkedin.com/in/yourusername" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                <a href="https://twitter.com/yourusername" target="_blank" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle theme">
+                    <i class="fas fa-sun"></i>
+                </button>
+                <button id="profile-btn" class="profile-btn" onclick="openProfileModal()" aria-label="Profile">
+                    <i class="fas fa-user-circle"></i>
+                </button>
+                <button onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+        </nav>
+
+        <!-- Profile Modal -->
+        <div id="profile-modal" class="profile-modal">
+            <div class="profile-modal-content">
+                <div class="profile-modal-header">
+                    <h2><i class="fas fa-user-circle"></i> User Profile</h2>
+                    <button class="profile-close-btn" onclick="closeProfileModal()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="profile-modal-body">
+                    <div class="profile-avatar">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <div class="profile-info">
+                        <div class="profile-field">
+                            <label><i class="fas fa-user"></i> Full Name</label>
+                            <span id="profile-fullname" class="profile-loading">
+                                <div class="loading-spinner"></div>
+                                Loading...
+                            </span>
+                        </div>
+                        <div class="profile-field">
+                            <label><i class="fas fa-envelope"></i> Email</label>
+                            <span id="profile-email" class="profile-loading">
+                                <div class="loading-spinner"></div>
+                                Loading...
+                            </span>
+                        </div>
+                        <div class="profile-field">
+                            <label><i class="fas fa-calendar-alt"></i> Account Created</label>
+                            <span id="profile-created" class="profile-loading">
+                                <div class="loading-spinner"></div>
+                                Loading...
+                            </span>
+                        </div>
+                        <div class="profile-field">
+                            <label><i class="fas fa-shield-alt"></i> Account Status</label>
+                            <span id="profile-status" class="status-active profile-loading">
+                                <div class="loading-spinner"></div>
+                                Loading...
+                            </span>
+                        </div>
+                        <div class="profile-field">
+                            <label><i class="fas fa-user-tag"></i> Role</label>
+                            <span id="profile-role" class="profile-loading">
+                                <div class="loading-spinner"></div>
+                                Loading...
+                            </span>
+                        </div>
+                        <div class="profile-field">
+                            <label><i class="fas fa-clock"></i> Last Login</label>
+                            <span id="profile-lastLogin" class="profile-loading">
+                                <div class="loading-spinner"></div>
+                                Loading...
+                            </span>
+                        </div>
+                    </div>
+                    <div id="profile-error" class="error-message" style="display: none;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>Failed to load profile data. Please try again.</span>
+                    </div>
+                    <div class="profile-actions">
+                        <button class="profile-action-btn" onclick="refreshProfile()">
+                            <i class="fas fa-sync-alt"></i> Refresh Profile
+                        </button>
+                        <button class="profile-action-btn" onclick="editProfile()">
+                            <i class="fas fa-edit"></i> Edit Profile
+                        </button>
+                        <button class="profile-action-btn" onclick="changePassword()">
+                            <i class="fas fa-key"></i> Change Password
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div id="loading-overlay" class="loading-overlay" style="display: none;">
+            <div class="loading-modal">
+                <div class="loading-spinner"></div>
+                <h3 id="loading-message">Loading...</h3>
+            </div>
+        </div>
+
+        <!-- Global Error/Success Messages Container -->
+        <div id="message-container" style="position: fixed; top: 20px; right: 20px; z-index: 10000; max-width: 400px;"></div>
+
+        <div class="main-container">
+            <div class="image-section" data-aos="fade-right">
+                <img src="images/pexels-cottonbro-7019219.jpg" alt="Visionary Architecture" data-parallax>
+            </div>
+            <div class="content-section" data-aos="fade-left">
+                <div class="text-content">
+                    <span class="tagline">Shaping Iconic Structures Since 2014.</span>
+                    <h1>Building visionary architecture for modern living</h1>
+                </div>
+                <div class="tags-container" data-aos="fade-up" data-aos-delay="200">
+                    <span class="tag">Interior Design</span>
+                    <span class="tag">Consultation</span>
+                    <span class="tag">Architecture</span>
+                    <span class="tag">Exterior Design</span>
+                    <span class="tag">Landscape Design</span>
+                    <span class="tag">Design & Planning</span>
+                </div>
+                <div class="gallery-description-container">
+                    <div class="gallery-images" data-aos="fade-up" data-aos-delay="400">
+                        <img src="images/pexels-tiger-lily-4483774.jpg" alt="Interior 1" class="small-image">
+                        <img src="images/second_photo_page.jpg" alt="Interior 2" class="small-image">
+                        <img src="images/back.jpeg" alt="Interior 3" class="small-image">
+                    </div>
+                    <p class="description-text" data-aos="fade-up" data-aos-delay="600">
+                        We create architectural designs that shape modern living, combining creativity and innovation to deliver exceptional spaces.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="about-section">
+        <div class="about-container">
+            <div class="about-content" data-aos="fade-right">
+                <span class="about-tagline">About Us</span>
+                <h2>A decade of designing with precision, passion, and purpose</h2>
+                <p class="about-description">
+                    Established 2014.<br><br>
+                    At the core of our architectural firm is a passion for transforming spaces and enriching lives through innovative design. Since our founding in 2014, we have stood the test of time, creating thoughtful, sustainable, and functional structures.
+                </p>
+                <div class="about-gallery" data-aos="fade-up" data-aos-delay="200">
+                    <img src="images/about-sec-3.jpeg" alt="Small Gallery Image" class="about-small-image">
+                </div>
+                <div class="about-button-wrapper" data-aos="fade-up" data-aos-delay="400">
+                    <a href="#" class="about-button">More About Us →</a>
+                </div>
+            </div>
+            <div class="about-image-section" data-aos="fade-left">
+                <img src="images/about-sec-1.jpeg" alt="About Image" class="about-main-image" data-parallax>
+            </div>
+        </div>
+    </section>
+
+        <section class="explore-section">
+  <div class="explore-container">
+    <div class="explore-content">
+      <div class="explore-tagline">Explore AI-Powered Inventory Management</div>
+      <h2>Transform Your Inventory with AI Innovation</h2>
+      <p class="explore-description">Our AI-driven inventory management system revolutionizes how businesses manage stock, offering unmatched efficiency, accuracy, and scalability.</p>
+
+      <!-- Fewer Feature Cards -->
+      <div class="features-container">
+        <div class="feature-card">
+    <h3>Competitor Price Watch</h3>
+    <p>Monitors competitor pricing and suggests dynamic adjustments in real-time.</p>
+    <span class="feature-tooltip" data-tooltip="Boosts competitive edge by 12%.">Quick Stats</span>
+</div>
+<div class="feature-card">
+  <h3>Geo-Based Stock</h3>
+  <p>Automatically balances inventory across regions based on local demand data.</p>
+  <span class="feature-tooltip" data-tooltip="Optimizes local delivery by 30%.">Quick Stats</span>
+</div>
+        <div class="feature-card">
+    <h3>Auto Supplier Switching</h3>
+    <p>Ensures continuity by dynamically replacing underperforming suppliers with alternatives.</p>
+    <span class="feature-tooltip" data-tooltip="Reduces supply chain disruption by 25%.">Quick Stats</span>
+    </div>
+
+        <div class="feature-card">
+    <h3>Smart Restock Alerts</h3>
+    <p>Notifies staff of restocking needs along with AI-driven insights behind the alert.</p>
+    <span class="feature-tooltip" data-tooltip="Improves decision-making speed by 40%.">Quick Stats</span>
+</div>
+
+      </div>
+
+      <!-- Chart Section -->
+      <div class="explore-charts-row">
+        <canvas id="inventoryChart"></canvas>
+        <canvas id="growthChart"></canvas>
+      </div>
+
+      <div style="margin-top: 50px;" data-aos="fade-up" data-aos-delay="700">
+        <div class="carousel-container">
+                <button class="arrow left-arrow" aria-label="Previous Slide">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="15 18 9 12 15 6" />
+    </svg>
+  </button>
+  <div class="carousel-track">
+    <div class="carousel-slide"><img src="images/chart_img_1.jpeg" alt="Invenarc AI Analytics Dashboard" class="explore-small-image"></div>
+    <div class="carousel-slide"><img src="images/chart_img_2.jpeg" alt="Invenarc Real-time Monitoring Interface" class="explore-small-image"></div>
+    <div class="carousel-slide"><img src="images/chart_img_3.jpeg" alt="Invenarc Auto Restock Alerts System" class="explore-small-image"></div>
+    <div class="carousel-slide"><img src="images/chart_img_4.jpeg" alt="Invenarc Multi-location Management" class="explore-small-image"></div>
+    <div class="carousel-slide"><img src="images/chart_img_5.jpeg" alt="Invenarc Secure Cloud Storage" class="explore-small-image"></div>
+    <div class="carousel-slide"><img src="images/chart_img_6.jpeg" alt="Invenarc Expert Consultation Platform" class="explore-small-image"></div>
+    <div class="carousel-slide"><img src="images/chart_img_7.jpeg" alt="Invenarc Advanced Analytics Features" class="explore-small-image"></div>
+  </div>
+                <button class="arrow right-arrow" aria-label="Next Slide">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="9 18 15 12 9 6" />
+    </svg>
+  </button>
+</div>
+      </div>
+      <div class="explore-button-wrapper" style="margin-top: 30px;" data-aos="zoom-in" data-aos-delay="800">
+        <a href="#" class="explore-button"><i class="fas fa-rocket"></i> Explore AI Features →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<section class="why-choose-section">
+  <div class="why-choose-container">
+    <div class="why-choose-header">
+      <span class="section-tagline">Why Choose Invenarc?</span>
+      <h2>Smarter Inventory Starts Here</h2>
+      <p>Explore how Invenarc combines real-time visibility, automation, and AI insights to reshape inventory operations.</p>
+    </div>
+
+    <div class="why-choose-flex">
+      
+      <!-- LEFT: Feature Cards -->
+      <div class="feature-card-column">
+        <div class="platform-highlights">
+  <div class="highlight-item">
+    ⚡ <strong>Fast Setup:</strong> Get started in minutes, not days
+  </div>
+  <div class="highlight-item">
+    🔐 <strong>Secure Cloud:</strong> Data is encrypted & auto-backed up
+  </div>
+  <div class="highlight-item">
+    📱 <strong>Mobile Friendly:</strong> Manage inventory from your phone
+  </div>
+  <div class="highlight-item">
+    🔗 <strong>API Ready:</strong> Seamlessly connect with existing tools
+  </div>
+</div>
+
+        <div class="comparison-card-grid">
+          <!-- ... your 5 feature cards here (same as before) ... -->
+        </div>
+
+        <!-- Stats Counters -->
+        <div class="stats-counter-row">
+          <div class="stat-box">
+            <h3><span class="count" data-target="94">0</span>%</h3>
+            <p>AI Forecast Accuracy</p>
+          </div>
+          <div class="stat-box">
+            <h3><span class="count" data-target="4200">0</span>+</h3>
+            <p>Inventory Items Synced</p>
+          </div>
+          <div class="stat-box">
+            <h3><span class="count" data-target="3.2">0</span>s</h3>
+            <p>Avg Restock Time</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: AI Benefits -->
+      <div class="key-benefits-panel">
+        <h3>✨ Key Benefits</h3>
+        <ul>
+          <li><strong>Zero stockouts:</strong> Predict shortages before they happen</li>
+          <li><strong>AI-First Decisions:</strong> Let smart algorithms guide your restocks</li>
+          <li><strong>Centralized View:</strong> Monitor multiple warehouses in one dashboard</li>
+          <li><strong>Supplier Ranking:</strong> Know which vendors perform best</li>
+          <li><strong>99.9% Uptime:</strong> Secure, scalable cloud infrastructure</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- What We Do Section (Modern Minimal) -->
+<section class="what-we-do-modern-section">
+  <div class="what-we-do-modern-container">
+    <div class="what-we-do-modern-left">
+      <div class="what-we-do-modern-header">
+        <span class="what-we-do-modern-badge">WHAT WE DO</span>
+        <h2 class="what-we-do-modern-title">Our Services</h2>
+        <p class="what-we-do-modern-subtitle">
+          We approach each project with a focus on detail and precision, transforming ideas into beautifully designed solutions that meet both aesthetic and functional needs.
+        </p>
+    </div>
+      <img src="images/chart_img_1.jpeg" alt="Invenarc Service" class="what-we-do-modern-image">
+    </div>
+    <div class="what-we-do-modern-right">
+      <div class="what-we-do-modern-list-container">
+        <ul class="what-we-do-modern-list">
+          <li data-img="images/chart_img_1.jpeg" class="hover-left-space">
+            <span class="hover-left-text">AI Analytics</span>
+            <div class="what-we-do-modern-desc">Unlock powerful insights with AI-driven analytics that help you forecast demand and optimize inventory.</div>
+          </li>
+          <li data-img="images/chart_img_2.jpeg" class="hover-left-space">
+            <span class="hover-left-text">Real-time Monitoring</span>
+            <div class="what-we-do-modern-desc">Monitor your inventory in real-time across all locations for complete visibility and control.</div>
+          </li>
+          <li data-img="images/chart_img_3.jpeg" class="hover-left-space">
+            <span class="hover-left-text">Auto Restock Alerts</span>
+            <div class="what-we-do-modern-desc">Never run out of stock with automated restock alerts tailored to your business needs.</div>
+          </li>
+          <li data-img="images/chart_img_4.jpeg" class="hover-left-space">
+            <span class="hover-left-text">Multi-location Support</span>
+            <div class="what-we-do-modern-desc">Easily manage inventory across multiple warehouses and locations with seamless synchronization.</div>
+          </li>
+          <li data-img="images/chart_img_5.jpeg" class="hover-left-space">
+            <span class="hover-left-text">Secure Cloud Storage</span>
+            <div class="what-we-do-modern-desc">Keep your data safe and accessible with secure, cloud-based storage solutions.</div>
+          </li>
+          <li data-img="images/chart_img_6.jpeg" class="hover-left-space">
+            <span class="hover-left-text">Expert Consultation</span>
+            <div class="what-we-do-modern-desc">Get expert advice and strategic recommendations for every stage of your inventory journey.</div>
+          </li>
+        </ul>
+  </div>
+    </div>
+  </div>
+</section>
+
+<!-- Modern Footer -->
+<footer class="modern-footer">
+  <div class="footer-content">
+    <div class="footer-main">
+      <!-- Company Info -->
+      <div class="footer-section company-info">
+        <div class="footer-logo">
+          <img src="favicon/favicon-32x32.png" alt="Invenarc Logo" />
+          <h3>Invenarc</h3>
+        </div>
+        <p class="company-description">
+          Revolutionizing inventory management with AI-powered solutions. 
+          Streamline your operations, reduce costs, and boost efficiency.
+        </p>
+        <div class="social-links">
+          <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+          <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+          <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
+          <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+        </div>
+      </div>
+
+      <!-- Product Features -->
+      <div class="footer-section">
+        <h4>Product Features</h4>
+        <ul>
+          <li><a href="#"><i class="fas fa-robot"></i> AI-Powered Analytics</a></li>
+          <li><a href="#"><i class="fas fa-chart-line"></i> Real-time Monitoring</a></li>
+          <li><a href="#"><i class="fas fa-sync-alt"></i> Auto Restock Alerts</a></li>
+          <li><a href="#"><i class="fas fa-globe"></i> Multi-location Support</a></li>
+          <li><a href="#"><i class="fas fa-shield-alt"></i> Secure Cloud Storage</a></li>
+        </ul>
+      </div>
+
+      <!-- Solutions -->
+      <div class="footer-section">
+        <h4>Solutions</h4>
+        <ul>
+          <li><a href="#"><i class="fas fa-store"></i> Retail Management</a></li>
+          <li><a href="#"><i class="fas fa-industry"></i> Manufacturing</a></li>
+          <li><a href="#"><i class="fas fa-truck"></i> Logistics & Supply</a></li>
+          <li><a href="#"><i class="fas fa-hospital"></i> Healthcare</a></li>
+          <li><a href="#"><i class="fas fa-graduation-cap"></i> Education</a></li>
+        </ul>
+      </div>
+
+      <!-- Support -->
+      <div class="footer-section">
+        <h4>Support & Resources</h4>
+        <ul>
+          <li><a href="#"><i class="fas fa-book"></i> Documentation</a></li>
+          <li><a href="#"><i class="fas fa-video"></i> Video Tutorials</a></li>
+          <li><a href="#"><i class="fas fa-headset"></i> 24/7 Support</a></li>
+          <li><a href="#"><i class="fas fa-users"></i> Community Forum</a></li>
+          <li><a href="#"><i class="fas fa-download"></i> API Reference</a></li>
+        </ul>
+      </div>
+
+      <!-- Newsletter -->
+      <div class="footer-section newsletter">
+        <h4>Stay Updated</h4>
+        <p>Get the latest updates on new features and industry insights.</p>
+        <form class="newsletter-form">
+          <div class="input-group">
+            <input type="email" placeholder="Enter your email" required />
+            <button type="submit">
+              <i class="fas fa-paper-plane"></i>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Footer Bottom -->
+    <div class="footer-bottom">
+      <div class="footer-bottom-content">
+        <div class="copyright">
+          <p>&copy; 2025 Invenarc. All rights reserved. | <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
+        </div>
+        <div class="footer-stats">
+          <span><i class="fas fa-users"></i> 10,000+ Users</span>
+          <span><i class="fas fa-globe"></i> 50+ Countries</span>
+          <span><i class="fas fa-star"></i> 4.9/5 Rating</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+
+
+    <!-- Add AOS JavaScript and Initialize -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 50
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        let lastScrollPosition = 0;
+        let ticking = false;
+
+        document.addEventListener('scroll', function() {
+            lastScrollPosition = window.scrollY;
+
+            if (!ticking) {
+                window.requestAnimationFrame(function() {
+                    const parallaxImages = document.querySelectorAll('[data-parallax]');
+                    parallaxImages.forEach(img => {
+                        const speed = 0.06;
+                        const offset = lastScrollPosition * speed;
+                        img.style.transform = `translateY(${offset}px)`;
+                    });
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        });
+    });
+</script>
+<script>
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const body = document.body;
+
+        // Load theme from localStorage or default to light
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            body.setAttribute('data-theme', savedTheme);
+            themeToggleBtn.innerHTML = savedTheme === 'dark'
+                ? '<i class="fas fa-moon"></i>'
+                : '<i class="fas fa-sun"></i>';
+        });
+
+        // Toggle theme and save preference
+        themeToggleBtn.addEventListener('click', () => {
+            const currentTheme = body.getAttribute('data-theme');
+            if (currentTheme === 'light') {
+                body.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i>';
+            } else {
+                body.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light');
+                themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        });
+    </script>
+    <script>
+// Chart.js on-scroll animation for charts
+function createInventoryChart() {
+  const ctx1 = document.getElementById('inventoryChart').getContext('2d');
+  new Chart(ctx1, {
+    type: 'bar',
+    data: {
+      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+      datasets: [{
+        label: 'Inventory Used (Units)',
+        data: [120, 190, 300, 250, 220],
+        backgroundColor: '#00bfa6'
+      }]
+    },
+    options: {
+      animation: {
+        duration: 1200,
+        easing: 'easeOutQuart'
+      },
+      plugins: {
+        legend: { display: false }
+      },
+      responsive: true
+    }
+  });
+}
+
+function createGrowthChart() {
+  const ctx2 = document.getElementById('growthChart').getContext('2d');
+  new Chart(ctx2, {
+    type: 'line',
+    data: {
+      labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+      datasets: [{
+        label: 'Efficiency Growth',
+        data: [20, 35, 55, 70],
+        borderColor: '#00bfa6',
+        backgroundColor: 'rgba(0, 191, 166, 0.1)',
+        tension: 0.4,
+        fill: true
+      }]
+    },
+    options: {
+      animation: {
+        duration: 1200,
+        easing: 'easeOutQuart'
+      },
+      plugins: {
+        legend: { position: 'top' }
+      },
+      responsive: true
+    }
+  });
+}
+
+// Intersection Observer to trigger chart creation
+let inventoryChartLoaded = false;
+let growthChartLoaded = false;
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      if (entry.target.id === 'inventoryChart' && !inventoryChartLoaded) {
+        createInventoryChart();
+        inventoryChartLoaded = true;
+      }
+      if (entry.target.id === 'growthChart' && !growthChartLoaded) {
+        createGrowthChart();
+        growthChartLoaded = true;
+      }
+    }
+  });
+}, { threshold: 0.3 });
+
+observer.observe(document.getElementById('inventoryChart'));
+observer.observe(document.getElementById('growthChart'));
+</script>
+  <script>
+  const track = document.querySelector('.carousel-track');
+  const slides = Array.from(track.children);
+  const slideWidth = slides[0].offsetWidth + parseInt(getComputedStyle(slides[0]).marginRight);
+  const slidesPerView = 3;
+  let currentIndex = 0;
+
+  function updateCarousel() {
+    track.style.transition = 'transform 0.5s ease';
+    track.style.transform = `translateX(-${currentIndex * slideWidth}px)`;
+  }
+
+  // Wheel scroll
+  let isScrolling = false;
+  document.querySelector('.carousel-container').addEventListener('wheel', (e) => {
+    e.preventDefault();
+    if (isScrolling) return;
+
+    if (e.deltaY > 0 && currentIndex < slides.length - slidesPerView) currentIndex++;
+    else if (e.deltaY < 0 && currentIndex > 0) currentIndex--;
+
+    updateCarousel();
+
+    isScrolling = true;
+    setTimeout(() => isScrolling = false, 600);
+  });
+
+  // Arrow buttons
+  document.querySelector('.left-arrow').addEventListener('click', () => {
+    if (currentIndex > 0) {
+      currentIndex--;
+      updateCarousel();
+    }
+  });
+
+  document.querySelector('.right-arrow').addEventListener('click', () => {
+    if (currentIndex < slides.length - slidesPerView) {
+      currentIndex++;
+      updateCarousel();
+    }
+  });
+
+  // Initial position
+  updateCarousel();
+</script>
+<script>
+  const counters = document.querySelectorAll('.count');
+
+  counters.forEach(counter => {
+    const updateCount = () => {
+      const target = parseFloat(counter.getAttribute('data-target'));
+      const current = parseFloat(counter.innerText);
+      const increment = (target - current) / 20;
+
+      if (current < target) {
+        counter.innerText = (current + increment).toFixed(1);
+        setTimeout(updateCount, 30);
+      } else {
+        counter.innerText = target.toString();
+      }
+    };
+
+    updateCount();
+  });
+
+</script>
+
+<script>
+    // Authentication check function
+    async function checkAuthentication() {
+        const token = localStorage.getItem("jwt");
+        console.log("Token found:", token ? "YES" : "NO");
+        console.log("Token value:", token ? token.substring(0, 20) + "..." : "NO TOKEN");
+        
+        if (!token) {
+            console.log("No token found, redirecting to login");
+            showErrorMessage("No authentication token found. Redirecting to login...");
+            setTimeout(() => {
+                window.location.href = "admin_login.html";
+            }, 2000);
+            return false;
+        }
+
+        // Show loading state
+        showLoadingOverlay("Checking authentication...");
+
+        try {
+            console.log("Testing backend connectivity...");
+            const testResponse = await fetch("http://localhost:8080/api/test");
+            console.log("Backend test response:", testResponse.status);
+            
+            if (!testResponse.ok) {
+                console.log("Backend not accessible, but allowing user to stay on page");
+                hideLoadingOverlay();
+                showInfoMessage("Backend not available, but you can continue using the demo");
+                return true; // Allow user to stay on page even if backend is down
+            }
+        } catch (error) {
+            console.log("Backend test failed, but allowing user to stay on page");
+            hideLoadingOverlay();
+            showInfoMessage("Backend not available, but you can continue using the demo");
+            return true; // Allow user to stay on page even if backend is down
+        }
+
+        try {
+            console.log("Calling protected API...");
+            const response = await fetch("http://localhost:8080/api/protected", {
+                method: 'GET',
+                headers: {
+                    "Authorization": "Bearer " + token,
+                    "Content-Type": "application/json"
+                }
+            });
+            
+            console.log("Response status:", response.status);
+            console.log("Response ok:", response.ok);
+            
+            if (response.ok) {
+                const data = await response.text();
+                console.log("Authentication successful:", data);
+                hideLoadingOverlay();
+                showSuccessMessage("Authentication successful!", 3000);
+                return true;
+            } else {
+                console.log("Token invalid, redirecting to login");
+                localStorage.removeItem("jwt");
+                hideLoadingOverlay();
+                showErrorMessage("Authentication failed. Redirecting to login...");
+                setTimeout(() => {
+                    window.location.href = "admin_login.html";
+                }, 2000);
+                return false;
+            }
+        } catch (error) {
+            console.error("Authentication error:", error);
+            console.error("Error details:", {
+                name: error.name,
+                message: error.message,
+                stack: error.stack
+            });
+            
+            // Don't redirect on network errors - let user stay on page
+            // Only redirect if it's a clear authentication error
+            if (error.message.includes('Failed to fetch') || error.name === 'TypeError') {
+                console.log("Network error, but allowing user to stay on page");
+                hideLoadingOverlay();
+                showInfoMessage("Network error, but you can continue using the demo");
+                return true; // Allow user to stay on page even with network issues
+            }
+            
+            localStorage.removeItem("jwt");
+            hideLoadingOverlay();
+            showErrorMessage("Authentication error. Redirecting to login...");
+            setTimeout(() => {
+                window.location.href = "admin_login.html";
+            }, 2000);
+            return false;
+        }
+    }
+
+    // Run authentication check when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("Page loaded, checking authentication...");
+        checkAuthentication();
+    });
+    
+    // Navigation functions
+    function showDashboard() {
+        // Hide other sections and show dashboard section
+        document.querySelector('.hero-section').style.display = 'none';
+        document.querySelector('.about-section').style.display = 'none';
+        document.querySelector('.explore-section').style.display = 'none';
+        document.querySelector('.why-choose-section').style.display = 'none';
+        document.querySelector('.what-we-do-modern-section').style.display = 'none';
+        
+        // Show dashboard section
+        document.getElementById('dashboard-section').style.display = 'block';
+        document.getElementById('dashboard-section').scrollIntoView({ behavior: 'smooth' });
+        
+        // Initialize dashboard charts
+        initializeDashboardCharts();
+    }
+    
+    function showComingSoon(feature) {
+        showInfoMessage(`${feature} feature is coming soon! Stay tuned for updates.`);
+    }
+    
+    function initializeDashboardCharts() {
+        // Initialize the inventory trend chart
+        const ctx = document.getElementById('inventoryTrendChart');
+        if (ctx) {
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Inventory Value',
+                        data: [35000, 38000, 42000, 41000, 45000, 45230],
+                        borderColor: '#00bfa6',
+                        backgroundColor: 'rgba(0, 191, 166, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    }
+</script>
+<script>
+  function logout() {
+        showLoadingOverlay("Logging out...");
+        setTimeout(() => {
+            localStorage.removeItem("jwt");
+            showSuccessMessage("Logged out successfully!", 2000);
+            setTimeout(() => {
+                window.location.href = "admin_login.html";
+            }, 1000);
+        }, 500);
+    }
+</script>
+
+<!-- Profile Modal JavaScript -->
+<script>
+    // Profile Modal Functions
+    function openProfileModal() {
+        const modal = document.getElementById('profile-modal');
+        const profileBtn = document.getElementById('profile-btn');
+        const modalContent = modal.querySelector('.profile-modal-content');
+        
+        // Get profile button position
+        const btnRect = profileBtn.getBoundingClientRect();
+        const btnCenterX = btnRect.left + btnRect.width / 2;
+        const btnCenterY = btnRect.top + btnRect.height / 2;
+        
+        // Hide the profile button to create morphing effect
+        profileBtn.style.opacity = '0';
+        
+        // Set initial position to profile button center
+        modalContent.style.left = btnCenterX + 'px';
+        modalContent.style.top = btnCenterY + 'px';
+        modalContent.style.transform = 'translate(-50%, -50%) scale(0.1)';
+        modalContent.style.borderRadius = '50%';
+        modalContent.style.opacity = '1';
+        
+        modal.style.display = 'flex';
+        
+        // Animate to final position with morphing effect
+        setTimeout(() => {
+            modalContent.style.transition = 'all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+            modalContent.style.left = '50%';
+            modalContent.style.top = '120px';
+            modalContent.style.transform = 'translateX(-50%) scale(1)';
+            modalContent.style.borderRadius = '20px';
+        }, 10);
+        
+        loadUserProfile();
+    }
+
+    function closeProfileModal() {
+        const modal = document.getElementById('profile-modal');
+        const profileBtn = document.getElementById('profile-btn');
+        const modalContent = modal.querySelector('.profile-modal-content');
+        
+        // Get profile button position
+        const btnRect = profileBtn.getBoundingClientRect();
+        const btnCenterX = btnRect.left + btnRect.width / 2;
+        const btnCenterY = btnRect.top + btnRect.height / 2;
+        
+        // Animate back to profile button with morphing effect
+        modalContent.style.transition = 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+        modalContent.style.left = btnCenterX + 'px';
+        modalContent.style.top = btnCenterY + 'px';
+        modalContent.style.transform = 'translate(-50%, -50%) scale(0.1)';
+        modalContent.style.borderRadius = '50%';
+        
+        // Show the profile button again
+        profileBtn.style.opacity = '1';
+        
+        // Hide modal after animation
+        setTimeout(() => {
+            modal.style.display = 'none';
+            modalContent.style.transition = 'none';
+        }, 300);
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        const modal = document.getElementById('profile-modal');
+        if (event.target === modal) {
+            closeProfileModal();
+        }
+    }
+
+    async function loadUserProfile() {
+        const token = localStorage.getItem("jwt");
+        if (!token) {
+            console.log("No token found");
+            showErrorMessage("No authentication token found. Please log in again.");
+            return;
+        }
+
+        // Show loading state
+        showProfileLoading(true);
+        hideProfileError();
+
+        try {
+            // Fetch user profile data from the backend
+            const response = await fetch("http://localhost:8080/api/profile", {
+                method: 'GET',
+                headers: {
+                    "Authorization": "Bearer " + token,
+                    "Content-Type": "application/json"
+                }
+            });
+
+            if (response.ok) {
+                const userData = await response.json();
+                console.log("Profile data received:", userData);
+                
+                // Map the backend data to profile fields
+                const profileData = {
+                    fullName: userData.fullName || userData.name || userData.username || 'User',
+                    email: userData.email || userData.emailAddress || 'No email provided',
+                    createdAt: userData.createdAt || userData.createdDate || userData.registrationDate || 'Unknown',
+                    status: userData.status || userData.accountStatus || userData.isActive ? 'Active' : 'Inactive',
+                    role: userData.role || 'User',
+                    lastLogin: userData.lastLogin || 'Never logged in'
+                };
+                
+                updateProfileDisplay(profileData);
+                showSuccessMessage("Profile loaded successfully!", 3000);
+            } else if (response.status === 404) {
+                // If profile endpoint doesn't exist, try the protected endpoint
+                console.log("Profile endpoint not found, trying protected endpoint...");
+                await loadProfileFromProtectedEndpoint(token);
+            } else {
+                const errorText = await response.text();
+                console.error("Response error text:", errorText);
+                throw new Error(`HTTP ${response.status}: ${response.statusText} - ${errorText}`);
+            }
+        } catch (error) {
+            console.error("Error loading profile:", error);
+            console.error("Error details:", {
+                name: error.name,
+                message: error.message,
+                stack: error.stack
+            });
+            
+            // Try fallback method
+            try {
+                await loadProfileFromProtectedEndpoint(token);
+            } catch (fallbackError) {
+                console.error("Fallback profile loading failed:", fallbackError);
+                console.error("Fallback error details:", {
+                    name: fallbackError.name,
+                    message: fallbackError.message
+                });
+                updateProfileDisplay(getFallbackUserData());
+                showProfileError();
+                showErrorMessage("Failed to load profile from server. Using demo data.");
+            }
+        } finally {
+            // Hide loading state
+            showProfileLoading(false);
+        }
+    }
+
+    async function loadProfileFromProtectedEndpoint(token) {
+        const response = await fetch("http://localhost:8080/api/protected", {
+            method: 'GET',
+            headers: {
+                "Authorization": "Bearer " + token,
+                "Content-Type": "application/json"
+            }
+        });
+
+        if (response.ok) {
+            const userData = await response.json();
+            console.log("Protected endpoint data:", userData);
+            
+            // Extract user info from protected endpoint response
+            const profileData = {
+                fullName: userData.fullName || userData.name || userData.username || userData.user?.name || 'User',
+                email: userData.email || userData.emailAddress || userData.user?.email || 'No email provided',
+                createdAt: userData.createdAt || userData.createdDate || userData.registrationDate || userData.user?.createdAt || 'Unknown',
+                status: userData.status || userData.accountStatus || (userData.user?.isActive !== undefined ? (userData.user.isActive ? 'Active' : 'Inactive') : 'Active'),
+                role: userData.role || 'User',
+                lastLogin: userData.lastLogin || 'Never logged in'
+            };
+            
+            updateProfileDisplay(profileData);
+            showInfoMessage("Profile loaded from fallback endpoint");
+        } else {
+            throw new Error(`Protected endpoint failed: ${response.status}`);
+        }
+    }
+
+    function showProfileLoading(show) {
+        const loadingElements = document.querySelectorAll('.profile-loading');
+        loadingElements.forEach(element => {
+            if (show) {
+                element.innerHTML = '<div class="loading-spinner"></div>Loading...';
+            } else {
+                element.classList.remove('profile-loading');
+            }
+        });
+    }
+
+    function hideProfileError() {
+        const errorElement = document.getElementById('profile-error');
+        if (errorElement) {
+            errorElement.style.display = 'none';
+        }
+    }
+
+    function showProfileError() {
+        const errorElement = document.getElementById('profile-error');
+        if (errorElement) {
+            errorElement.style.display = 'flex';
+        }
+    }
+
+    // Utility functions for loading and error handling
+    function showLoadingOverlay(message = "Loading...") {
+        const overlay = document.getElementById('loading-overlay');
+        const messageElement = document.getElementById('loading-message');
+        if (overlay && messageElement) {
+            messageElement.textContent = message;
+            overlay.style.display = 'flex';
+        }
+    }
+
+    function hideLoadingOverlay() {
+        const overlay = document.getElementById('loading-overlay');
+        if (overlay) {
+            overlay.style.display = 'none';
+        }
+    }
+
+    function showMessage(type, message, duration = 5000) {
+        const container = document.getElementById('message-container');
+        if (!container) return;
+
+        const messageElement = document.createElement('div');
+        messageElement.className = `${type}-message`;
+        messageElement.innerHTML = `
+            <i class="fas fa-${type === 'error' ? 'exclamation-triangle' : type === 'success' ? 'check-circle' : 'info-circle'}"></i>
+            <span>${message}</span>
+            <button onclick="this.parentElement.remove()" style="background: none; border: none; color: inherit; cursor: pointer; margin-left: auto;">
+                <i class="fas fa-times"></i>
+            </button>
+        `;
+
+        container.appendChild(messageElement);
+
+        // Auto-remove after duration
+        setTimeout(() => {
+            if (messageElement.parentElement) {
+                messageElement.remove();
+            }
+        }, duration);
+    }
+
+    function showErrorMessage(message, duration) {
+        showMessage('error', message, duration);
+    }
+
+    function showSuccessMessage(message, duration) {
+        showMessage('success', message, duration);
+    }
+
+    function showInfoMessage(message, duration) {
+        showMessage('info', message, duration);
+    }
+
+    function updateProfileDisplay(userData) {
+        document.getElementById('profile-fullname').textContent = userData.fullName || 'John Doe';
+        document.getElementById('profile-email').textContent = userData.email || 'john.doe@example.com';
+        document.getElementById('profile-created').textContent = userData.createdAt || 'January 2024';
+        document.getElementById('profile-status').textContent = userData.status || 'Active';
+        document.getElementById('profile-role').textContent = userData.role || 'User';
+        document.getElementById('profile-lastLogin').textContent = userData.lastLogin || 'Never logged in';
+    }
+
+    function getFallbackUserData() {
+        // Fallback data when backend is not accessible
+        return {
+            fullName: 'Demo User',
+            email: 'demo@invenarc.com',
+            createdAt: 'January 2024',
+            status: 'Active',
+            role: 'User',
+            lastLogin: 'Never logged in'
+        };
+    }
+
+    function editProfile() {
+        showLoadingOverlay("Opening profile editor...");
+        setTimeout(() => {
+            hideLoadingOverlay();
+            showInfoMessage("Edit profile functionality coming soon!");
+        }, 1000);
+    }
+
+    function changePassword() {
+        showLoadingOverlay("Opening password change...");
+        setTimeout(() => {
+            hideLoadingOverlay();
+            showInfoMessage("Change password functionality coming soon!");
+        }, 1000);
+    }
+
+    function refreshProfile() {
+        showLoadingOverlay("Refreshing profile data...");
+        setTimeout(() => {
+            hideLoadingOverlay();
+            loadUserProfile();
+        }, 500);
+    }
+</script>
+
+<script>
+// Image and description change on hover for What We Do section
+const serviceList = document.querySelectorAll('.what-we-do-modern-list li');
+const serviceImage = document.querySelector('.what-we-do-modern-image');
+let originalImg = serviceImage ? serviceImage.src : '';
+
+serviceList.forEach(item => {
+  item.addEventListener('mouseenter', () => {
+    // Image change with animation
+    if (serviceImage) {
+      serviceImage.classList.add('animating');
+      setTimeout(() => {
+        serviceImage.src = item.getAttribute('data-img');
+        serviceImage.classList.remove('animating');
+      }, 250);
+    }
+    // Description show
+    serviceList.forEach(li => li.classList.remove('active'));
+    item.classList.add('active');
+  });
+  item.addEventListener('mouseleave', () => {
+    // Image revert with animation
+    if (serviceImage) {
+      serviceImage.classList.add('animating');
+      setTimeout(() => {
+        serviceImage.src = originalImg;
+        serviceImage.classList.remove('animating');
+      }, 250);
+    }
+    // Description hide
+    item.classList.remove('active');
+  });
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const listItems = document.querySelectorAll('.what-we-do-modern-list li');
+  const EXPAND_AMOUNT = 48; // px, adjust as needed
+
+  listItems.forEach(item => {
+    item.addEventListener('mouseenter', function() {
+      // Remove from all first
+      listItems.forEach(li => {
+        li.classList.remove('center-expand');
+        li.style.transform = '';
+        li.style.marginTop = '';
+        li.style.marginBottom = '';
+      });
+      // Add to hovered
+      item.classList.add('center-expand');
+      item.style.transform = `translateY(-${EXPAND_AMOUNT/2}px)`;
+      item.style.marginTop = `${EXPAND_AMOUNT/2}px`;
+      item.style.marginBottom = `${EXPAND_AMOUNT/2}px`;
+    });
+    item.addEventListener('mouseleave', function() {
+      item.classList.remove('center-expand');
+      item.style.transform = '';
+      item.style.marginTop = '';
+      item.style.marginBottom = '';
+    });
+  });
+});
+</script>
+
+<script>
+const sidebar = document.getElementById('sidebar');
+const sidebarToggle = document.getElementById('sidebar-toggle');
+sidebarToggle.addEventListener('click', function(e) {
+    e.stopPropagation();
+    sidebar.classList.toggle('expanded');
+});
+document.addEventListener('click', function(e) {
+    if (!sidebar.contains(e.target) && sidebar.classList.contains('expanded')) {
+        sidebar.classList.remove('expanded');
+    }
+});
+</script>
+
+</body>
+</html>
